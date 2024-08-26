@@ -87,7 +87,7 @@ class LoginPage extends StatelessWidget {
                 // Login Button
                 ElevatedButton(
                   onPressed: () {
-                    Get.to(() => const AppHome());
+                    Get.to(() => const MyApp());
                     // Handle login action
                   },
                   style: ElevatedButton.styleFrom(

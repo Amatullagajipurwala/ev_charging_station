@@ -89,8 +89,9 @@ class SignUpPage extends StatelessWidget {
               // Sign Up Button
               ElevatedButton(
                 onPressed: () {
+
                   // Handle sign-up logic here
-                  Get.to(() => const AppHome()); // Navigate to home or app page after sign up
+                  Get.to(() => const MyApp()); // Navigate to home or app page after sign up
                 },
                 child: Text(
                   'Sign Up',
