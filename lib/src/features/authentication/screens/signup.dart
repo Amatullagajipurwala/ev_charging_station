@@ -1,14 +1,11 @@
-
-
 import 'package:ev_charging/src/features/authentication/screens/otpscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:ev_charging/src/features/authentication/controllers/signup_controller.dart';
-
 import '../../../../main.dart';
-import 'login.dart'; // Assuming this is where your home page or main app logic is
+import 'login.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -73,24 +70,46 @@ class SignUpPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                // Email TextFormField
-                TextFormField(
-                  controller: controller.email,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
+                // Email TextFormField with error message beside it
+                Obx(() => Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: controller.email,
+                        decoration: InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          final emailRegExp = RegExp(
+                              r"^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+                          if (!emailRegExp.hasMatch(value)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    controller.emailErrorMessage.value.isNotEmpty
+                        ? Text(
+                      controller.emailErrorMessage.value,
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                        : Container(),
+                  ],
+                )),
                 const SizedBox(height: 20),
-                // Phone Number TextFormField
+                // Phone Number TextFormField (Firebase validation)
                 TextFormField(
                   controller: controller.phoneNo,
                   decoration: const InputDecoration(
@@ -103,7 +122,7 @@ class SignUpPage extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your phone number';
                     }
-                    return null;
+                    return null; // Firebase handles further validation
                   },
                 ),
                 const SizedBox(height: 20),
@@ -120,19 +139,33 @@ class SignUpPage extends StatelessWidget {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
                     }
+                    final passwordRegExp = RegExp(
+                        r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
+                    if (!passwordRegExp.hasMatch(value)) {
+                      return 'Password must be at least 8 characters long, include 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character';
+                    }
                     return null;
                   },
                 ),
                 const SizedBox(height: 20),
                 // Sign Up Button
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (formKey.currentState!.validate()) {
-                      // Handle sign-up logic here
-                      SignUpController.instance.registerUser(controller.email.text.trim(),controller.password.text.trim());
-                         Get.to(() => const AppHome());
-                      // SignUpController.instance.phoneAuthentication(controller.phoneNo.text.trim());
-                      // Get.to(() => const OtpScreen());
+                      // Check if the email already exists
+                      await controller.checkEmailExists(controller.email.text.trim());
+                      if (controller.emailErrorMessage.value.isEmpty) {
+                        // Handle sign-up logic here
+                        await controller.registerUser(
+                          controller.email.text.trim(),
+                          controller.password.text.trim(),
+                        );
+                        Get.to(() => const AppHome());
+                      }else {
+                        // Display the error message without navigating away
+                        Get.snackbar('Error', controller.emailErrorMessage.value, snackPosition: SnackPosition.BOTTOM);
+                      }
+                      // If there is an email error message, the sign-up will not proceed
                     }
                   },
                   child: Text(
@@ -150,9 +183,8 @@ class SignUpPage extends StatelessWidget {
                 SignInButton(
                   Buttons.google,
                   onPressed: () {
-                    // Handle Google Sign-In logic here
-                    Get.snackbar(
-                        'Google Sign-In', 'Google Sign-In logic goes here!');
+                    Get.snackbar('Google Sign-In',
+                        'Google Sign-In logic goes here!');
                   },
                 ),
                 const SizedBox(height: 20),
@@ -160,7 +192,6 @@ class SignUpPage extends StatelessWidget {
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      // Navigate back to login page
                       Get.to(() => const LoginPage());
                     },
                     child: Text(

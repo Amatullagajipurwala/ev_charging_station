@@ -1,24 +1,27 @@
-import 'package:ev_charging/main.dart';
 import 'package:ev_charging/src/features/authentication/screens/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sign_in_button/sign_in_button.dart';
-import 'package:get/get.dart';
+import '../controllers/login_controller.dart'; // Ensure correct path
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Initialize the controller
+    final controller = Get.put(LoginController());
+
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView( // Added SingleChildScrollView
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 20), // Added padding at the top
+                const SizedBox(height: 20),
                 // Login image at the top
                 Image.asset(
                   'assets/images/login.png', // Replace with your image path
@@ -47,7 +50,8 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 30),
                 // Email TextField
-                TextField(
+                TextFormField(
+                  controller: controller.email,
                   decoration: InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(
@@ -55,17 +59,38 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
-                // Password TextField
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                // Password TextField with visibility toggle
+                Obx(
+                      () => TextFormField(
+                    controller: controller.password,
+                    obscureText: controller.showPassword.value ? false : true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: controller.showPassword.value
+                            ? const Icon(Icons.visibility)
+                            : const Icon(Icons.visibility_off),
+                        onPressed: () => controller.togglePasswordVisibility(),
+                      ),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
                   ),
-                  obscureText: true,
                 ),
                 const SizedBox(height: 10),
                 // Forgot Password?
@@ -85,22 +110,29 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 // Login Button
-                ElevatedButton(
-                  onPressed: () {
-                    Get.to(() => const AppHome());
-                    // Handle login action
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent, // Button color
-                    foregroundColor: Colors.white, // Text color
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                Obx(
+                      () => ElevatedButton(
+                    onPressed: controller.isLoading.value
+                        ? null // Disable button while loading
+                        : () async {
+                      await controller.login();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent, // Button color
+                      foregroundColor: Colors.white, // Text color
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Login',
-                    style: GoogleFonts.poppins(fontSize: 16),
+                    child: controller.isLoading.value
+                        ? const CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                        : Text(
+                      'Login',
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -149,7 +181,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20), // Added some padding at the bottom
+                const SizedBox(height: 20),
               ],
             ),
           ),
