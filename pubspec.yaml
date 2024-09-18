@@ -44,7 +44,8 @@ dependencies:
   firebase_core: ^3.3.0
   firebase_auth: ^5.1.4
   flutter_otp_text_field: ^1.1.3+2
-
+  cloud_firestore: ^5.2.1
+  geolocator: ^8.0.0
 
 
 dev_dependencies:
@@ -72,6 +73,7 @@ flutter:
   assets:
       - assets/images/ev.png
       - assets/images/login.png
+      - assets/images/Designer.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

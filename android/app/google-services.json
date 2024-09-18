@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "1095989705989",
-    "project_id": "fluuter-evcharging-app",
-    "storage_bucket": "fluuter-evcharging-app.appspot.com"
+    "project_number": "858776695188",
+    "project_id": "evcharging-28838",
+    "storage_bucket": "evcharging-28838.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1095989705989:android:5721645e8ff284d2d28b6c",
+        "mobilesdk_app_id": "1:858776695188:android:4d7c1271e2ed6c3e12df81",
         "android_client_info": {
           "package_name": "com.ev_charging.app"
         }
@@ -15,26 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDnQY97YQ1W5_M8fxonH6Hf7aP8X4Cp3uc"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1095989705989:android:6c0856d07add82c9d28b6c",
-        "android_client_info": {
-          "package_name": "com.ev_charging.app"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDnQY97YQ1W5_M8fxonH6Hf7aP8X4Cp3uc"
+          "current_key": "AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U"
         }
       ],
       "services": {

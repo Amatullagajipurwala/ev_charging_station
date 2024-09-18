@@ -41,47 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBrtn9F2mCSSdORsjEdpP1AOriQ6CwCL5U',
-    appId: '1:1095989705989:web:5cccb1b60e2e6051d28b6c',
-    messagingSenderId: '1095989705989',
-    projectId: 'fluuter-evcharging-app',
-    authDomain: 'fluuter-evcharging-app.firebaseapp.com',
+    apiKey: 'AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U',
+    appId: '1:858776695188:web:4d7c1271e2ed6c3e12df81',
+    messagingSenderId: '858776695188',
+    projectId: 'evcharging-28838',
+    authDomain: 'evcharging-28838.firebaseapp.com',
     storageBucket: 'fluuter-evcharging-app.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDnQY97YQ1W5_M8fxonH6Hf7aP8X4Cp3uc',
-    appId: '1:1095989705989:android:5721645e8ff284d2d28b6c',
-    messagingSenderId: '1095989705989',
-    projectId: 'fluuter-evcharging-app',
-    storageBucket: 'fluuter-evcharging-app.appspot.com',
+    apiKey: 'AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U',
+    appId: '1:858776695188:android:4d7c1271e2ed6c3e12df81',
+    messagingSenderId: '858776695188',
+    projectId: 'evcharging-28838',
+    storageBucket: 'evcharging-28838.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCjoYl07oLUVBZpS8V6f0WhW5ok6Rs-Zkc',
-    appId: '1:1095989705989:ios:537404b874469ff8d28b6c',
-    messagingSenderId: '1095989705989',
-    projectId: 'fluuter-evcharging-app',
-    storageBucket: 'fluuter-evcharging-app.appspot.com',
+    apiKey: 'AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U',
+    appId: '1:858776695188:ios:4d7c1271e2ed6c3e12df81',
+    messagingSenderId: '858776695188',
+    projectId: 'evcharging-28838',
+    storageBucket: 'evcharging-28838.appspot.com',
     iosBundleId: 'com.example.evCharging',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCjoYl07oLUVBZpS8V6f0WhW5ok6Rs-Zkc',
-    appId: '1:1095989705989:ios:537404b874469ff8d28b6c',
-    messagingSenderId: '1095989705989',
-    projectId: 'fluuter-evcharging-app',
-    storageBucket: 'fluuter-evcharging-app.appspot.com',
+    apiKey: 'AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U',
+    appId: '1:858776695188:ios:4d7c1271e2ed6c3e12df81',
+    messagingSenderId: '858776695188',
+    projectId: 'evcharging-28838',
+    storageBucket: 'evcharging-28838.appspot.com',
     iosBundleId: 'com.example.evCharging',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBrtn9F2mCSSdORsjEdpP1AOriQ6CwCL5U',
-    appId: '1:1095989705989:web:b917167ca23af6d6d28b6c',
-    messagingSenderId: '1095989705989',
-    projectId: 'fluuter-evcharging-app',
-    authDomain: 'fluuter-evcharging-app.firebaseapp.com',
-    storageBucket: 'fluuter-evcharging-app.appspot.com',
+    apiKey: 'AIzaSyB3bc6gXQn7y1IcGujAG8yEK4yUr5q7E6U',
+    appId: '1:858776695188:web:4d7c1271e2ed6c3e12df81',
+    messagingSenderId: '858776695188',
+    projectId: 'evcharging-28838',
+    authDomain: 'evcharging-28838.firebaseapp.com',
+    storageBucket: 'evcharging-28838.appspot.com',
   );
 
 }

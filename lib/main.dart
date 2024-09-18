@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ev_charging/firebase_options.dart';
 import 'package:ev_charging/src/features/authentication/screens/welcome.dart';
 import 'package:ev_charging/src/repository/authentication_repository.dart';
@@ -11,6 +11,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:ev_charging/src/utils/theme/theme.dart';
 import 'package:ev_charging/src/features/authentication/screens/mapscreen.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:geolocator/geolocator.dart';
+
 
 
 
@@ -92,7 +94,7 @@ class AppHome extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const MapScreen()),
+                        MaterialPageRoute(builder: (context) => MapScreen()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -142,42 +144,31 @@ class AppHome extends StatelessWidget {
   }
 }
 
-class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+class MapScreen extends StatefulWidget {
+  @override
+  _MapScreenState createState() => _MapScreenState();
+}
 
-  final List<Map<String, dynamic>> locations = const [
-    {
-      'name': 'Ahmedabad Charging Station',
-      'latitude': 23.0225,
-      'longitude': 72.5714,
-      'info': 'Fast charging available',
-      'image': 'assets/images/gandhinagar_station.jpg',
+class _MapScreenState extends State<MapScreen> {
+  late Future<List<Map<String, dynamic>>> _locations;
 
-    },
-    {
-      'name': 'Surat Charging Station',
-      'latitude': 21.1702,
-      'longitude': 72.8311,
-      'info': '24/7 service',
-      'image': 'assets/images/Designer.png',
+  @override
+  void initState() {
+    super.initState();
+    _locations = fetchLocations();
+  }
 
-    },
-    {
-      'name': 'Vadodara Charging Station',
-      'latitude': 22.3072,
-      'longitude': 73.1812,
-      'info': 'Free parking',
-      'image': 'assets/images/gandhinagar_station.jpg',
-
-    },
-    {
-      'name': 'Gandhinagar Charging Station',
-      'latitude': 23.2156,
-      'longitude': 72.6369,
-      'info': 'Solar-powered charging',
-      'image': 'assets/images/gandhinagar_station.jpg',
-    },
-  ];
+  Future<List<Map<String, dynamic>>> fetchLocations() async {
+    QuerySnapshot querySnapshot =
+    await FirebaseFirestore.instance.collection('charging_stations').get();
+    print(querySnapshot);
+    List<Map<String, dynamic>> fetchedLocations = [];
+    querySnapshot.docs.forEach((doc) {
+      fetchedLocations.add(doc.data() as Map<String, dynamic>);
+    });
+    print(fetchedLocations);
+    return fetchedLocations;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,47 +176,62 @@ class MapScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('EV Charging Stations'),
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: LatLng(23.0225, 72.5714),
-          zoom: 10.0,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-            additionalOptions: const {
-              'attribution': '© OpenStreetMap contributors',
-            },
-          ),
-          MarkerLayer(
-            markers: locations.map((location) {
-              return Marker(
-                width: 80.0,
-                height: 80.0,
-                point: LatLng(location['latitude'], location['longitude']),
-                builder: (ctx) => GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      ctx,
-                      MaterialPageRoute(
-                        builder: (context) => BookingPage(station: location),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _locations,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No data available'));
+          }
+
+          final locations = snapshot.data!;
+
+          return FlutterMap(
+            options: MapOptions(
+              center: LatLng(23.0225, 72.5714),
+              zoom: 10.0,
+            ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                subdomains: ['a', 'b', 'c'],
+                additionalOptions: const {
+                  'attribution': '© OpenStreetMap contributors',
+                },
+              ),
+              MarkerLayer(
+                markers: locations.map((location) {
+                  return Marker(
+                    width: 80.0,
+                    height: 80.0,
+                    point: LatLng(location['latitude'], location['longitude']),
+                    builder: (ctx) => GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          ctx,
+                          MaterialPageRoute(
+                            builder: (context) => StationInfoPage(station: location),
+                          ),
+                        );
+                      },
+                      child: Tooltip(
+                        message: location['info'],
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.blue,
+                          size: 45.0,
+                        ),
                       ),
-                    );
-                  },
-                  child: Tooltip(
-                    message: location['info'],
-                    child: const Icon(
-                      Icons.location_on,
-                      color: Colors.blue,
-                      size: 45.0,
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
+                  );
+                }).toList(),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -550,6 +556,55 @@ class ConfirmationScreen extends StatelessWidget {
   }
 }
 
+class StationInfoPage extends StatelessWidget {
+  final Map<String, dynamic> station;
 
+  const StationInfoPage({required this.station, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(station['name']?.toString() ?? 'Station Info'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (station['image'] != null && station['image'] is String)
+              Image.asset(station['image'].replaceAll('\\', '/'))
+            else
+              Image.asset('assets/images/default_station.png'),
+            const SizedBox(height: 16),
+            Text(
+              'Station Info: ${station['info']?.toString() ?? 'No info available'}',
+              style: const TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Reviews:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            if (station['reviews'] is List)
+              ...((station['reviews'] as List).map((review) => Text('- ${review.toString()}')).toList()),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BookingPage(station: station),
+                  ),
+                );
+              },
+              child: const Text('Book Now'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 
